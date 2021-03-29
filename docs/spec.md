@@ -5,7 +5,6 @@
 To enable the value flow between BSC and Ethereum, especially for the token not listed on .com, we introduce a swap service as a bridge between Ethereum and BSC. It should implement that:
 1. Value flow between BSC and Ethereum bi-directionally.
 2. The tokens can be initially created on Ethereum, then register the ERC20 token to ETH swap proxy contract. Then a BEP20 token will be deployed on BSC by the BSC-ETH swap service.
-3. BSC-ETH will use TSS(Threshold Signature Scheme) to secure all swap assets.
 
 ## How It Works?
 
@@ -30,7 +29,7 @@ The Binance Chain team will deploy two swap contracts on both ETH and BSC, then 
 
 ![img](img/eth2bsc.png)
 
-1. Users call the swap method to deposit ERC20 to the swap service’s ETH TSS account.  Zero swap fee will be charged.Then a deposit event will be emitted.
+1. Users call the swap method to deposit ERC20 to the swap service’s ETH account.  Zero swap fee will be charged.Then a deposit event will be emitted.
 2. BSC-ETH-Swap service will monitor deposit events on ETH and do some checks.
 3. If all checks are passed, the swap service will send a transaction to mint BEP20 token to the swap requester.
 
@@ -41,5 +40,5 @@ The Binance Chain team will deploy two swap contracts on both ETH and BSC, then 
 1. Users call the swap method to deposit BEP20 to the BSC swap contract. Users need to pay BNB as the swap fee. The deposited token will be burned immediately and emit an deposit event.
 2. BSC-ETH-Swap service will monitor deposit events on BSC and do some checks.
 3. If all checks are passed, the swap service will send a transaction to transfer the ERC20 token to the swap requester.
-4. The BSC TSS account has the authority to change the swap fee.
+4. The BSC account has the authority to change the swap fee.
 
