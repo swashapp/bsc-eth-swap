@@ -20,7 +20,6 @@ import (
 	"github.com/binance-chain/bsc-eth-swap/common"
 	"github.com/binance-chain/bsc-eth-swap/model"
 	"github.com/binance-chain/bsc-eth-swap/util"
-
 )
 
 func buildSwapPairInstance(pairs []model.SwapPair) (map[ethcom.Address]*SwapPairIns, error) {
@@ -130,7 +129,8 @@ func buildSignedTransaction(contract ethcom.Address, ethClient *ethclient.Client
 	}
 
 	rawTx := types.NewTransaction(nonce, contract, value, gasLimit, gasPrice, txInput)
-	signedTx, err := txOpts.Signer(types.HomesteadSigner{}, txOpts.From, rawTx)
+	// signedTx, err := txOpts.Signer(types.HomesteadSigner{}, txOpts.From, rawTx)
+	signedTx, err := txOpts.Signer(txOpts.From, rawTx)
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +156,8 @@ func buildNativeCoinTransferTx(contract ethcom.Address, ethClient *ethclient.Cli
 	}
 
 	rawTx := types.NewTransaction(nonce, contract, value, gasLimit, gasPrice, nil)
-	signedTx, err := txOpts.Signer(types.HomesteadSigner{}, txOpts.From, rawTx)
+	// signedTx, err := txOpts.Signer(types.HomesteadSigner{}, txOpts.From, rawTx)
+	signedTx, err := txOpts.Signer(txOpts.From, rawTx)
 	if err != nil {
 		return nil, err
 	}

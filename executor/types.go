@@ -1,11 +1,12 @@
 package executor
 
 import (
+	"math/big"
+
 	common "github.com/binance-chain/bsc-eth-swap/common"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	ethcmm "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"math/big"
 
 	"github.com/binance-chain/bsc-eth-swap/model"
 )
@@ -46,7 +47,9 @@ func (ev *ETH2BSCSwapStartedEvent) ToSwapStartTxLog(log *types.Log) *model.SwapS
 func ParseETH2BSCSwapStartEvent(abi *abi.ABI, log *types.Log) (*ETH2BSCSwapStartedEvent, error) {
 	var ev ETH2BSCSwapStartedEvent
 
-	err := abi.Unpack(&ev, SwapStartedEventName, log.Data)
+	// err := abi.Unpack(&ev, SwapStartedEventName, log.Data)
+	err := abi.UnpackIntoInterface(&ev, SwapStartedEventName, log.Data)
+	// ev, err := abi.Unpack(SwapStartedEventName, log.Data)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +85,9 @@ func (ev *BSC2ETHSwapStartedEvent) ToSwapStartTxLog(log *types.Log) *model.SwapS
 func ParseBSC2ETHSwapStartEvent(abi *abi.ABI, log *types.Log) (*BSC2ETHSwapStartedEvent, error) {
 	var ev BSC2ETHSwapStartedEvent
 
-	err := abi.Unpack(&ev, SwapStartedEventName, log.Data)
+	// err := abi.Unpack(&ev, SwapStartedEventName, log.Data)
+	err := abi.UnpackIntoInterface(&ev, SwapStartedEventName, log.Data)
+	// ev, err := abi.Unpack(SwapStartedEventName, log.Data)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +98,6 @@ func ParseBSC2ETHSwapStartEvent(abi *abi.ABI, log *types.Log) (*BSC2ETHSwapStart
 
 	return &ev, nil
 }
-
 
 // =================  SwapPairRegister ===================
 var (
@@ -127,7 +131,9 @@ func (ev *SwapPairRegisterEvent) ToSwapPairRegisterLog(log *types.Log) *model.Sw
 func ParseSwapPairRegisterEvent(abi *abi.ABI, log *types.Log) (*SwapPairRegisterEvent, error) {
 	var ev SwapPairRegisterEvent
 
-	err := abi.Unpack(&ev, SwapPairRegisterEventName, log.Data)
+	// err := abi.Unpack(&ev, SwapPairRegisterEventName, log.Data)
+	err := abi.UnpackIntoInterface(&ev, SwapPairRegisterEventName, log.Data)
+	// ev, err := abi.Unpack(SwapPairRegisterEventName, log.Data)
 	if err != nil {
 		return nil, err
 	}

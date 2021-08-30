@@ -2,10 +2,12 @@ package executor
 
 import (
 	"context"
-	"github.com/ethereum/go-ethereum"
 	"math/big"
 	"strings"
 	"time"
+
+	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	ethcmm "github.com/ethereum/go-ethereum/common"
@@ -26,6 +28,17 @@ type EthExecutor struct {
 	ethSwapAgentInst *contractabi.ETHSwapAgent
 	SwapAgentAbi     abi.ABI
 	Client           *ethclient.Client
+}
+
+func toBlockNumArg(number *big.Int) string {
+	if number == nil {
+		return "latest"
+	}
+	pending := big.NewInt(-1)
+	if number.Cmp(pending) == 0 {
+		return "pending"
+	}
+	return hexutil.EncodeBig(number)
 }
 
 func NewEthExecutor(ethClient *ethclient.Client, swapAddr string, config *util.Config) *EthExecutor {
@@ -61,7 +74,7 @@ func (e *EthExecutor) GetBlockAndTxEvents(height int64) (*common.BlockAndEventLo
 		return nil, err
 	}
 
-	packageLogs, err := e.GetLogs(header)
+	packageLogs, err := e.GetLogs(header, height)
 	if err != nil {
 		return nil, err
 	}
@@ -76,12 +89,12 @@ func (e *EthExecutor) GetBlockAndTxEvents(height int64) (*common.BlockAndEventLo
 	}, nil
 }
 
-func (e *EthExecutor) GetLogs(header *types.Header) ([]interface{}, error) {
-	startEvs, err := e.GetSwapStartLogs(header)
+func (e *EthExecutor) GetLogs(header *types.Header, height int64) ([]interface{}, error) {
+	startEvs, err := e.GetSwapStartLogs(header, height)
 	if err != nil {
 		return nil, err
 	}
-	regiserEvs, err := e.GetSwapPairRegisterLogs(header)
+	regiserEvs, err := e.GetSwapPairRegisterLogs(header, height)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +104,7 @@ func (e *EthExecutor) GetLogs(header *types.Header) ([]interface{}, error) {
 
 }
 
-func (e *EthExecutor) GetSwapPairRegisterLogs(header *types.Header) ([]interface{}, error) {
+func (e *EthExecutor) GetSwapPairRegisterLogs(header *types.Header, height int64) ([]interface{}, error) {
 	topics := [][]ethcmm.Hash{{SwapPairRegisterEventHash}}
 
 	blockHash := header.Hash()
@@ -128,9 +141,8 @@ func (e *EthExecutor) GetSwapPairRegisterLogs(header *types.Header) ([]interface
 	return eventModels, nil
 }
 
-func (e *EthExecutor) GetSwapStartLogs(header *types.Header) ([]interface{}, error) {
+func (e *EthExecutor) GetSwapStartLogs(header *types.Header, height int64) ([]interface{}, error) {
 	topics := [][]ethcmm.Hash{{ETH2BSCSwapStartedEventHash}}
-
 	blockHash := header.Hash()
 
 	ctxWithTimeout, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -141,6 +153,7 @@ func (e *EthExecutor) GetSwapStartLogs(header *types.Header) ([]interface{}, err
 		Topics:    topics,
 		Addresses: []ethcmm.Address{e.SwapAgentAddr},
 	})
+
 	if err != nil {
 		return nil, err
 	}

@@ -183,6 +183,11 @@ func (engine *SwapEngine) createSwap(txEventLog *model.SwapStartTxLog) *model.Sw
 	err := func() error {
 		if txEventLog.Chain == common.ChainETH {
 			erc20Addr = ethcom.HexToAddress(txEventLog.TokenAddr)
+			fmt.Printf("MASOUD erc20Addr: %s\n", erc20Addr)
+			bep20Addr, ok = engine.erc20ToBEP20[ethcom.HexToAddress(txEventLog.TokenAddr)]
+			fmt.Printf("MASOUD bep20Addr: %s\n", bep20Addr)
+			fmt.Printf("MASOUD ok: %t\n", ok)
+
 			if bep20Addr, ok = engine.erc20ToBEP20[ethcom.HexToAddress(txEventLog.TokenAddr)]; !ok {
 				return fmt.Errorf("unsupported eth token contract address: %s", txEventLog.TokenAddr)
 			}
